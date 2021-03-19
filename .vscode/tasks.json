@@ -1,0 +1,106 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+
+        // Тестовый прогон: компиляция, сборка образа, локальный запуск
+        {
+            "label": "Test",
+            "dependsOrder": "sequence",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "Compile linux",
+                "Image build",
+                "Run",
+            ],
+            "problemMatcher": [
+            ],
+            "detail": "Тестовый прогон: компиляция, сборка образа, запуск",
+        },
+
+        // Компиляция linux:
+        {
+            "label": "Compile linux",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "build",
+                "-o", "../docker/bin/service.bin",
+            ],
+            "options": {
+                "cwd": "src",
+                "env": {
+                    "GOOS": "linux",
+                    "GOARCH": "amd64",
+                }
+            },
+            "presentation": {
+                "clear": true
+            },
+            "group": "none",
+            "problemMatcher": "$go"
+        },
+
+        // Компиляция win:
+        {
+            "label": "Compile win",
+            "type": "shell",
+            "command": "go",
+            "args": [
+                "build",
+                "-o", "../docker/bin/service.exe",
+            ],
+            "options": {
+                "cwd": "src",
+                "env": {
+                    "GOOS": "windows",
+                    "GOARCH": "amd64",
+                }
+            },
+            "presentation": {
+                "clear": true
+            },
+            "group": "none",
+            "problemMatcher": "$go"
+        },
+
+        // Сборка образа:
+        {
+            "label": "Image build",
+            "type": "shell",
+            "command": "docker",
+            "options": {
+                "cwd": "docker"
+            },
+            "args": [
+                "build",
+                ".",
+                "-t",
+                "rvolkov/event_emitter_service"
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "problemMatcher": [],
+        },
+
+        // Локальный запуск образа для теста:
+        {
+            "label": "Run",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "run",
+                "--rm",
+                "--name", "event_emitter",
+                "rvolkov/event_emitter_service",
+            ],
+            "presentation": {
+                "clear": true
+            },
+            "problemMatcher": [],
+        },
+	]
+}
